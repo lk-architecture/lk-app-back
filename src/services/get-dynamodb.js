@@ -17,7 +17,7 @@ export default function getDynamodb (options) {
             accessKeyId: "accessKeyId",
             secretAccessKey: "secretAccessKey",
             endpoint: "http://localhost:8000",
-            region: "us-west-1"
+            region: "us-east-1"
         })
     );
     return promisifyAll(dynamodb);
