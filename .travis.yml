@@ -1,0 +1,14 @@
+language: node_js
+
+node_js:
+  - 5
+
+before_script:
+  - npm run start-dynamodb &
+
+script:
+  - npm run lint
+  - npm test
+
+after_success:
+  - npm run codecov
