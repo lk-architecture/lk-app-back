@@ -9,6 +9,8 @@ const options = {
     },
     host: config.HOST
 };
+
 export default convexpress(options)
     .serveSwagger()
+    .convroute(require("api/buckets/post"))
     .convroute(require("api/deployments/post"));
