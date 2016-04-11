@@ -1,4 +1,4 @@
-import getS3 from "services/aws";
+import {getS3} from "services/aws";
 
 export const path = "/buckets";
 export const method = "post";

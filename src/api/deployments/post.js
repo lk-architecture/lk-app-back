@@ -4,7 +4,7 @@ import {stringifyEnvVars} from "lk-lambda-deploy";
 import {v4} from "node-uuid";
 
 import * as config from "config";
-import getDynamodb from "services/aws";
+import {getDynamodb} from "services/aws";
 import getGithubRef from "utils/get-github-ref";
 
 const execAsync = promisify(exec);

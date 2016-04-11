@@ -3,7 +3,7 @@ import {promisifyAll} from "bluebird";
 
 import {NODE_ENV} from "config";
 
-export default function getDynamodb (options) {
+export function getDynamodb (options) {
     const dynamodb = (
         NODE_ENV === "development" ?
         new DynamoDB.DocumentClient({
@@ -23,7 +23,7 @@ export default function getDynamodb (options) {
     return promisifyAll(dynamodb);
 }
 
-export default function getS3 (options) {
+export function getS3 (options) {
     const s3 = (
         NODE_ENV === "development" ?
         new S3({
