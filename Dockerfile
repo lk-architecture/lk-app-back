@@ -8,7 +8,7 @@ RUN pip install awscli
 
 ADD . /lk-app-back
 WORKDIR /lk-app-back
-RUN npm install
+CMD ["npm", "install"]
 
 EXPOSE 3000
 CMD ["npm", "start"]
