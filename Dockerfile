@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 MAINTAINER Wattellina <wattelina@mondora.com>
 
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
-RUN apt-get update && apt-get install -y zip nodejs
+RUN apt-get update && apt-get install -y build-essential zip nodejs
 
 RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
 RUN unzip awscli-bundle.zip
