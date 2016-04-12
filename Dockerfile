@@ -1,11 +1,12 @@
 FROM ubuntu:14.04
 MAINTAINER Wattellina <wattelina@mondora.com>
 
-RUN apt-get update && apt-get -y install zip curl build-essential libssl-dev
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
-RUN source ~/.profile
-RUN nvm install 5.8.0
-RUN nvm use 5.8.0
+RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
+RUN apt-get update && apt-get -y install zip nodejs aws-cli
+
+RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+RUN unzip awscli-bundle.zip
+RUN ./awscli-bundle/install -b ~/bin/aws
 
 ADD . /lk-app-back
 WORKDIR /lk-app-back
