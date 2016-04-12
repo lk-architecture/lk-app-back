@@ -3,6 +3,7 @@ MAINTAINER Wattellina <wattelina@mondora.com>
 
 RUN apt-get update && apt-get -y install zip curl build-essential libssl-dev
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+RUN source ~/.profile
 RUN nvm install 5.8.0
 RUN nvm use 5.8.0
 
