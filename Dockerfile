@@ -1,9 +1,7 @@
-FROM ubuntu:14.04
-MAINTAINER Wattellina <wattelina@mondora.com>
+FROM node
+MAINTAINER Paolo Scanferla <paolo.scanferla@gmail.com>
 
-RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
-RUN apt-get update && apt-get install -y curl build-essential zip npm nodejs python-pip groff
-
+RUN apt-get update && apt-get install -y zip python-pip groff
 RUN pip install awscli
 
 ADD . /lk-app-back
