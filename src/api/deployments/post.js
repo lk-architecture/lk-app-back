@@ -86,7 +86,7 @@ export async function handler (req, res) {
         `--lambdaName lk-${lambdaName}-${environmentName}`,
         `--lambdaRole ${lambda.role}`,
         `--environmentVariables "${environmentVariables}"`
-    ].join(" "), {stdio: "inherit"});
+    ].join(" "), {maxBuffer: 1024 * 800, stdio: "inherit"});
     const deploymentId = v4();
     await dynamodb.putAsync({
         TableName : config.DYNAMODB_DEPLOYMENTS_TABLE,
