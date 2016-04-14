@@ -5,6 +5,7 @@ import {v4} from "node-uuid";
 
 import * as config from "config";
 import {getDynamodb} from "services/aws";
+import log from "services/logger";
 import getGithubRef from "utils/get-github-ref";
 
 const execAsync = promisify(exec);
@@ -56,50 +57,54 @@ export const responses = {
     }
 };
 export async function handler (req, res) {
-    const {
-        awsRegion,
-        awsAccessKeyId,
-        awsSecretAccessKey,
-        environmentName,
-        lambdaName
-    } = req.body;
-    const dynamodb = getDynamodb({
-        accessKeyId: awsAccessKeyId,
-        secretAccessKey: awsSecretAccessKey,
-        region: awsRegion
-    });
-    const {Item: lambda} = await dynamodb.getAsync({
-        TableName : config.DYNAMODB_LAMBDAS_TABLE,
-        Key: {
-            name: lambdaName,
-            environmentName: environmentName
-        }
-    });
-    const githubRef = await getGithubRef(lambda);
-    const environmentVariables = stringifyEnvVars(lambda.environmentVariables);
-    await execAsync([
-        "$(npm bin)/lk-lambda-deploy",
-        `--awsAccessKeyId ${awsAccessKeyId}`,
-        `--awsSecretAccessKey ${awsSecretAccessKey}`,
-        `--awsRegion ${awsRegion}`,
-        `--githubRef ${githubRef}`,
-        `--lambdaName lk-${lambdaName}-${environmentName}`,
-        `--lambdaRole ${lambda.role}`,
-        `--environmentVariables "${environmentVariables}"`
-    ].join(" "), {stdio: "inherit"});
-    const deploymentId = v4();
-    await dynamodb.putAsync({
-        TableName : config.DYNAMODB_DEPLOYMENTS_TABLE,
-        Item: {
-            id: deploymentId,
-            lambdaName: lambdaName,
-            environmentName: environmentName,
-            awsRegion: awsRegion,
-            githubRef: githubRef,
-            lambdaRole: lambda.role,
-            environmentVariables: lambda.environmentVariables,
-            timestamp: new Date().toISOString()
-        }
-    });
-    res.status(201).send({id: deploymentId});
+    try {
+        const {
+            awsRegion,
+            awsAccessKeyId,
+            awsSecretAccessKey,
+            environmentName,
+            lambdaName
+        } = req.body;
+        const dynamodb = getDynamodb({
+            accessKeyId: awsAccessKeyId,
+            secretAccessKey: awsSecretAccessKey,
+            region: awsRegion
+        });
+        const {Item: lambda} = await dynamodb.getAsync({
+            TableName : config.DYNAMODB_LAMBDAS_TABLE,
+            Key: {
+                name: lambdaName,
+                environmentName: environmentName
+            }
+        });
+        const githubRef = await getGithubRef(lambda);
+        const environmentVariables = stringifyEnvVars(lambda.environmentVariables);
+        await execAsync([
+            "$(npm bin)/lk-lambda-deploy",
+            `--awsAccessKeyId ${awsAccessKeyId}`,
+            `--awsSecretAccessKey ${awsSecretAccessKey}`,
+            `--awsRegion ${awsRegion}`,
+            `--githubRef ${githubRef}`,
+            `--lambdaName lk-${lambdaName}-${environmentName}`,
+            `--lambdaRole ${lambda.role}`,
+            `--environmentVariables "${environmentVariables}"`
+        ].join(" "), {stdio: "inherit"});
+        const deploymentId = v4();
+        await dynamodb.putAsync({
+            TableName : config.DYNAMODB_DEPLOYMENTS_TABLE,
+            Item: {
+                id: deploymentId,
+                lambdaName: lambdaName,
+                environmentName: environmentName,
+                awsRegion: awsRegion,
+                githubRef: githubRef,
+                lambdaRole: lambda.role,
+                environmentVariables: lambda.environmentVariables,
+                timestamp: new Date().toISOString()
+            }
+        });
+        res.status(201).send({id: deploymentId});
+    } catch (e) {
+        log.info(e);
+    }
 }
