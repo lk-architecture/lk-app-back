@@ -1,6 +1,6 @@
 {
   "name": "lk-app-back",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "lk-app API server",
   "main": "lib/server.js",
   "scripts": {

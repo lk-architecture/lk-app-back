@@ -40,7 +40,11 @@ export const parameters = [{
                 type: "string"
             },
             version: {
-                description: "GitHub commit version",
+                description: "Github commit version",
+                type: "string"
+            },
+            htmlUrl: {
+                description: "Github commit url",
                 type: "string"
             }
         },
@@ -66,13 +70,15 @@ export async function handler (req, res) {
         awsSecretAccessKey,
         environmentName,
         lambdaName,
-        version
+        version,
+        htmlUrl
     } = req.body;
     const dynamodb = getDynamodb({
         accessKeyId: awsAccessKeyId,
         secretAccessKey: awsSecretAccessKey,
         region: awsRegion
     });
+
     const {Item: lambda} = await dynamodb.getAsync({
         TableName : config.DYNAMODB_LAMBDAS_TABLE,
         Key: {
@@ -80,6 +86,7 @@ export async function handler (req, res) {
             environmentName: environmentName
         }
     });
+
     const githubRef = await getGithubRef(lambda);
     const environmentVariables = stringifyEnvVars(lambda.environmentVariables);
     await execAsync([
@@ -91,7 +98,8 @@ export async function handler (req, res) {
         `--lambdaName lk-${lambdaName}-${environmentName}`,
         `--lambdaRole ${lambda.role}`,
         `--environmentVariables "${environmentVariables}"`,
-        `--version "${version}"`
+        `--version "${version}"`,
+        `--htmlUrl "${htmlUrl}"`
     ].join(" "), {maxBuffer: 1024 * 800, stdio: "inherit"});
     const deploymentId = v4();
     await dynamodb.putAsync({
@@ -105,6 +113,7 @@ export async function handler (req, res) {
             lambdaRole: lambda.role,
             environmentVariables: lambda.environmentVariables,
             version: version,
+            htmlUrl: htmlUrl,
             timestamp: new Date().toISOString()
         }
     });
