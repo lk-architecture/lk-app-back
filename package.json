@@ -60,7 +60,7 @@
     "express-bearer-token": "^2.1.0",
     "express-jwt": "^5.0.0",
     "jsonwebtoken": "^7.1.9",
-    "lk-lambda-deploy": "^1.0.9",
+    "lk-lambda-deploy": "^1.0.10",
     "ramda": "^0.22.1"
   }
 }
